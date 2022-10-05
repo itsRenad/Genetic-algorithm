@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-print("H")
-=======
 import random
 import math
->>>>>>> 6e6c88698e204831adc4b89297b44863feeb342b
+
 
 #lists to store initial population and ideal population
 container_list = []
@@ -141,8 +138,3 @@ items,containers,option = input_func()
 create_initial_population(items,containers,option)
 calculate_fitness(items,containers)
 
-<<<<<<< HEAD
-Hey
-Hey girlsss
-=======
->>>>>>> 6e6c88698e204831adc4b89297b44863feeb342b
