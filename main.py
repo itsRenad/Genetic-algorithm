@@ -3,6 +3,8 @@ import math
 
 
 #Lists to store initial population and ideal population
+import sys
+
 container_list = []
 ideal_container_list = []
 
@@ -11,14 +13,16 @@ def input_func():
     items = int(input("Enter the number of items:  "))
     containers = int(input("Enter the number of containers:  "))
     option = int(input("Press 1 if you want items weight to be as i/2, Press 2 for weights as (i^2)/2: "))
+    if containers==1:
+        sys.exit("You have only one container, it is obvious!")
     return items,containers,option
 
 
 def create_initial_population(items,containers,option):
-    #Create list of lists for each container (chromosomes)
-    for i in range(0,containers-1):
+    #Create list of lists for each container (Chromosomes)
+    for i in range(0,containers):
         container_list.append([])
-    #iterating till the number of items
+    #Fill containers with items weight(Genes)
     for i in range(1,items+1):
         #Select a random container
         index = random.randint(0,containers-1)
@@ -42,7 +46,7 @@ def compute_mean_weight_difference(container):
             sum += container[i][j]
         #appending the weight sum to list
         each_container_weight_sum.append(sum)
-    #calculating difference between the total weights of each container 
+    #calculating difference between the total weights of each container
     # weight_of_container[i] - weight_of_container[i+1]
     weight_diff_between_containers = [abs(j-i) for i, j in zip(each_container_weight_sum[:-1], each_container_weight_sum[1:])]
     #finding the mean difference of weights
@@ -52,60 +56,48 @@ def compute_mean_weight_difference(container):
 
 #function to find the ideal placement of weights in containers
 def find_ideal_setting(items,containers):
-    #converting the containers list of lists to a 1 dimensional weight list
+    #Convert the containers list of lists to a 1 dimensional weight list
     weight_list = [j for item in container_list for j in item]
-    #sorting the weight list
     weight_list.sort()
-    #setting element count to 0
-    ele = 0
-    #setting the total item count to items - 1 as ele is starting from zero
-    item_count = items - 1
-    #iterating till the number of containers
+    element = 0
+    count = items - 1
+
+    #Create list of lists for each container (Chromosomes)
     for i in range(0,containers):
-        #creating list of lists, one list for each container to store weights
         ideal_container_list.append([])
-    
-    #iterating till the number of containers
+
+    #Fill containers with items weight(Genes)
     for j in range(0,containers):
-        #checking if a even distribution of weights is possible
+        #Check if equal number of items is possible or not
         div = items%containers
-        if div == 0:
-            #finding the number of items that can go in each container
+        if div == 0:                                 #It is possible
             total = int(items/containers)
-            #finding the number of times item will be added
             each_item = int(total/2)
-            #doing this in order to avoid situations of iterating with zero
-            if each_item == 0:
-                each_item = 1
-            #adding one element from the start of sorted weight list and one from end to balance the weight distribution
+            #Add first and last elements in the list to containers
             while each_item > 0:
-                ideal_container_list[j].append(weight_list[ele])
-                ideal_container_list[j].append(weight_list[item_count])
-                #decrementing the item count and each item and incrementing the element count
-                item_count -= 1
-                ele += 1
+                ideal_container_list[j].append(weight_list[element])
+                ideal_container_list[j].append(weight_list[count])
+                count -= 1
+                element += 1
                 each_item -= 1
-        #if a even distribution of weights is not possible
-        else:
-            #adding items to the containers linearly
-            if j < containers - 1:
-                ideal_container_list[j].append(weight_list[ele])
-                ele += 1
-        #if we'e reached the last container and we still have items remaining to add to container
-        if j == containers - 1 and (items - ele) > 0:
-            #iterate till the number of remaining items
-            for i in range(0,items - ele):
-                #list to store the sum of weights
+
+        else:                                      #It is impossible
+
+            if j < containers - 1 and (items - element) > 0 :
+                ideal_container_list[j].append(weight_list[element])
+                element += 1
+
+        #Last container reached and stil have items
+        if j == containers - 1 and (items - element) > 0:
+            for i in range(0,items - element):
                 summ = []
-                #setting min value to a large number
                 min_sum = 9999
-                #initialising minimum index with zero
                 min_index=0
-                #iterating till the length of containers
+
+                #Add each remaining items to the minimum container weight
                 for i in range(0,len(ideal_container_list)):
-                    #calculating the sum of weights of container and adding the current item weight in it as well 
-                    summ.append(sum(ideal_container_list[i]) + weight_list[item_count])
-                if ele <= item_count:
+                    summ.append(sum(ideal_container_list[i]) + weight_list[count])
+                if element <= count:
                     #iterating till the length of summ list containing sum of weights of containers
                     for i in range(0,len(summ)):
                         #if the weight sum at a particular index is less than the min_sum we swap the values
@@ -114,9 +106,9 @@ def find_ideal_setting(items,containers):
                             #storing index containing minimum sum
                             min_index = i
                     #adding the elements weight to the minimum sum index
-                    ideal_container_list[min_index].append(weight_list[item_count])
+                    ideal_container_list[min_index].append(weight_list[count])
                     #decrementing the count of remaining items
-                    item_count -= 1
+                    count -= 1
 
 #function to caluclate fitness
 def calculate_fitness(items,containers):
@@ -131,7 +123,6 @@ def calculate_fitness(items,containers):
         print("Weights are not smartly distributed across containers")
         print("Your solution is :  ",container_list)
         print("Ideal solution is :  ",ideal_container_list)
-            
 
 #calling the functions
 items,containers,option = input_func()
