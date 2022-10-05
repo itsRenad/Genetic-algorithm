@@ -2,27 +2,27 @@ import random
 import math
 
 
-#lists to store initial population and ideal population
+#Lists to store initial population and ideal population
 container_list = []
 ideal_container_list = []
 
-#function to take input from the user
+#Ask user for requared inputs
 def input_func():
     items = int(input("Enter the number of items:  "))
     containers = int(input("Enter the number of containers:  "))
     option = int(input("Press 1 if you want items weight to be as i/2, Press 2 for weights as (i^2)/2: "))
     return items,containers,option
 
-#function to create initial population
+
 def create_initial_population(items,containers,option):
-    #creating list of lists upto the number of containers, one list for each container to store weights
-    for i in range(0,containers):
+    #Create list of lists for each container (chromosomes)
+    for i in range(0,containers-1):
         container_list.append([])
     #iterating till the number of items
     for i in range(1,items+1):
-        #selecting a random container
+        #Select a random container
         index = random.randint(0,containers-1)
-        #adding weight to the container based on user's option for weight selection
+        #Add weight to the container based on user option selecting
         if option == 1:
             container_list[index].append((i/2))
         else:
