@@ -1,10 +1,9 @@
 import random
+import sys
 import math
 
 
 #Lists to store initial population and ideal population
-import sys
-
 container_list = []
 ideal_container_list = []
 
@@ -109,28 +108,30 @@ def find_ideal_setting(items,containers):
                             min_sum = summ[i]
                             min_index = i
 
-                    ideal_container_list[min_index].append(weight_list[count])                    #decrementing the count of remaining items
+                    ideal_container_list[min_index].append(weight_list[count])    #decrementing the count of remaining items
                     count -= 1
 
 def calculate_fitness(items,containers):
     #Call the function to find ideal solution
     find_ideal_setting(items,containers)
+    
+    print("")
+    print("The solution is: ",container_list)
+    print("The Fitness value of the solution is: ",compute_mean_weight_difference(container_list))
+    
     #if the fitness value of our current solution is less than or equal to the fitness threshold value only then its a good distribution of weights across containers
     if compute_mean_weight_difference(container_list) <= compute_mean_weight_difference(ideal_container_list):
-        print("The containers have a good weight distribution")
-        print("The solution is: ",container_list)
-        print("Fitness function of the solution is: ",compute_mean_weight_difference(container_list)  )
-        print("Ideal solution is: ",ideal_container_list)
+
+        print("The containers' weights are distributed in a good way.")
+        print("The ideal solution is: ",ideal_container_list)
 
     else:
-        print("Weights are not smartly distributed across containers")
-        print("The solution is: ",container_list)
-        print("Fitness function of the solution is: ", compute_mean_weight_difference(container_list))
-        print("Ideal solution is: ",ideal_container_list)
+
+        print("The containers' weights are not distributed well.")
+        print("The ideal solution is: ",ideal_container_list)
 
 
 #Start
 items,containers,option = input_func()
 create_initial_population(items,containers,option)
 calculate_fitness(items,containers)
-
