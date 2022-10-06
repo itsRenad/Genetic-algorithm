@@ -2,7 +2,6 @@ import random
 import sys
 import math
 
-
 #Lists to store initial population and ideal population
 container_list = []
 ideal_container_list = []
@@ -11,7 +10,7 @@ ideal_container_list = []
 def input_func():
     items = int(input("Enter the number of items:  "))
     containers = int(input("Enter the number of containers:  "))
-    option = int(input("Press 1 if you want items weight to be as i/2, Press 2 for weights as (i^2)/2: "))
+    option = int(input("Press 1 if you want items' weights to be as item weight/2 \nOr press 2 for weights as (item weight^2)/2: "))
     if containers==1:
         sys.exit("You have only one container, it is obvious!")
     return items,containers,option
@@ -42,7 +41,7 @@ def compute_mean_weight_difference(container):
 
         each_container_weight_sum.append(sum)
     #Calculate difference between the sum of weights of each container
-    # weight_of_container[i] - weight_of_container[i+1]
+    #weight_of_container[i] - weight_of_container[i+1]
     #weight_diff_between_containers = [abs(j-i) for i, j in zip(each_container_weight_sum[:-1], each_container_weight_sum[1:])]
     for i, j in zip(each_container_weight_sum[:-1], each_container_weight_sum[1:]):
         weight_diff_between_containers = [abs(j-i)]
@@ -117,7 +116,7 @@ def calculate_fitness(items,containers):
     
     print("")
     print("The solution is: ",container_list)
-    print("The Fitness value of the solution is: ",compute_mean_weight_difference(container_list))
+    print("The fitness value of the solution is: ",compute_mean_weight_difference(container_list))
     
     #if the fitness value of our current solution is less than or equal to the fitness threshold value only then its a good distribution of weights across containers
     if compute_mean_weight_difference(container_list) <= compute_mean_weight_difference(ideal_container_list):
