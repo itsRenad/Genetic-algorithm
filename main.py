@@ -56,7 +56,12 @@ def compute_mean_weight_difference(container):
 
 #function to find the ideal placement of weights in containers
 def find_ideal_setting(items,containers):
+
     #Convert the containers list of lists to a 1 dimensional weight list
+
+    #converting the containers list of lists to a 1 dimensional weight list
+    #https://stackoverflow.com/questions/2961983/how-does-sum-flatten-lists
+
     weight_list = [j for item in container_list for j in item]
     weight_list.sort()
     element = 0
