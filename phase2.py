@@ -4,18 +4,17 @@ import matplotlib.pyplot as plt
 Scontainer = "container"
 Sitem = "item"
 
-class CargoLoading:
+class SmartCargoLoading:
     #Add the items to the containers
-    def Add_Item(self, container, item, opt, Chromo):
-        #if the user selects option A
-        if opt == "A":
+    def Add(self, container, item, opt, Chromo):
+        weight=0
+        if opt == 1:
             weight = item / 2
-        # if the user selects option B
-        elif opt == "B":
+        elif opt == 2:
             weight = (item ** 2) / 2
         Chromo[container].append((Sitem + str(item), weight))
     
-    def Find_Weight_Diff_Each_Population(self, pop):
+    def Find_Weight_Diff(self, pop):
         #list to store the sum of weights in each container
         sum_weights = []
         #iterating over the dictionary containing container and weights and calculating the sum of weights in each container
@@ -32,7 +31,7 @@ class CargoLoading:
         return max_weight - min_weight
     
     """creates n number of random populations"""
-    def Create_nRandom_Populations(self,num,items, containers, option):
+    def Create_Populations(self,num,items, containers, option):
         Population = []
         while num > 0:
             Population.append(self.Create_Random_Population(items, containers, option))
@@ -56,23 +55,23 @@ class CargoLoading:
                 # Chose a container in even index
                 rand = random.randrange(0, containers, 2)
                 # Add the item to the even container
-                self.Add_Item(d[rand], i, option, Chromosome)
+                self.Add(d[rand], i, option, Chromosome)
             # if prob value is greater than 1
             else:
                 # Chose a container in odd index
                 rand = random.randrange(1, containers, 2)
                 # Add the item to the odd container
-                self.Add_Item(d[rand], i, option, Chromosome)
+                self.Add(d[rand], i, option, Chromosome)
             i -= 1
         return Chromosome
     
     """calculates fitness of a given chromosome"""
     def Calculate_Fitness(self,chromosome):
-        fit = self.Find_Weight_Diff_Each_Population(chromosome)
+        fit = self.Find_Weight_Diff(chromosome)
         return fit
     
     """calculates fitness of all the chromosomes in the population"""
-    def Get_All_Fitness(self,pop):
+    def All_Fitness(self,pop):
         fitness = []
         for chrom in pop:
             fitness.append(self.Calculate_Fitness(chrom))
@@ -112,7 +111,7 @@ class CargoLoading:
         return dict(pop1)
     
     """creates a random population and mutates the given population with the random population"""
-    def Perform_Mutation(self,randPopA, randPopB, items,containers):
+    def Start_Mutation(self,randPopA, randPopB, items,containers):
         rand = random.uniform(0,1)
         randomPoP = None
         #creating a random population to mutate the population with. 
@@ -167,7 +166,7 @@ class CargoLoading:
     def Get_Input(self):
         containers = int(input("Please enter the number of containers:  "))
         items = int(input("Please enter the number of items in containers:  "))
-        option = str(input("Choose A if you want item`s weight to be as i/2 OR choose B if you want item weight as (i^2)/2: "))
+        option = int(input("Press 1 if you want items' weights to be as item weight/2 \nOr press 2 for weights as (item weight^2)/2: "))
         num = int(input("Enter the number of random populations to want to create: "))
         trials = int(input("Enter the number of trials: "))
         times = int(input("Enter the number of times you wish to perform mutation: "))
@@ -176,8 +175,8 @@ class CargoLoading:
     """function to randomly create n chromosome and calculate their fitness"""
     def Apply_Initial_Steps(self):
         containers,items,option,num,trials,times = self.Get_Input()
-        pop = self.Create_nRandom_Populations(num,items, containers, option)
-        fitness = self.Get_All_Fitness(pop)
+        pop = self.Create_Populations(num,items, containers, option)
+        fitness = self.All_Fitness(pop)
         return containers,items,option,num,fitness,pop,trials,times
     
     """prints the best overall fitness value and its chromosome"""
@@ -197,7 +196,7 @@ class CargoLoading:
                 randPopA, randPopB = self.Single_Point_Crossover(randPopA, randPopB)#crosover
                 #applies mutation as per the mutation operator
                 while times > 0:
-                    randPopA, randPopB = self.Perform_Mutation(randPopA, randPopB,items,containers)#mutation
+                    randPopA, randPopB = self.Start_Mutation(randPopA, randPopB,items,containers)#mutation
                     times -= 1
                 #calculates fitness values
                 fitA = self.Calculate_Fitness(randPopA)
@@ -219,7 +218,7 @@ class CargoLoading:
                 randPopA,randPopB,fitness = self.Ellitist_Wheel_Selection(fitness,pop) 
                 #applies mutation as per the mutation operator
                 while times > 0:
-                    randPopA, randPopB = self.Perform_Mutation(randPopA, randPopB,items,containers)#mutation
+                    randPopA, randPopB = self.Start_Mutation(randPopA, randPopB,items,containers)#mutation
                     times -= 1
                 #calculates fitness values
                 fitA = self.Calculate_Fitness(randPopA)
@@ -248,14 +247,14 @@ def Experimentation_Instance(pop_size,mutation_k,condition,instance):
     all_fitness = []
     #generation values
     exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
-    SCL = CargoLoading() 
+    SCL = SmartCargoLoading() 
     #doing for 8 trials
     counter = 8
     while counter > 0:
         exp_fitness=[]
         for i in range(0,len(exp_trials)):
-            pop = SCL.Create_nRandom_Populations(pop_size,items,containers,option)
-            fitness = SCL.Get_All_Fitness(pop)
+            pop = SCL.Create_Populations(pop_size,items,containers,option)
+            fitness = SCL.All_Fitness(pop)
             res = SCL.Genetic_Algorithm(exp_trials[i],containers,items,fitness,pop,mutation_k,condition)
             exp_fitness.append(res)
         counter -= 1
@@ -320,25 +319,18 @@ def Get_Best_Fitness(result,):
             print("Best Fitness for trial",i+1,"is: ",min_val,"for Generation",gen)
         print()
         
-# obj = CargoLoading()
-print("Plotting results for Instance 1")
-print()
-instance1_results = Result_Experimentation_Instance(1)
-Plot_Graphs(instance1_results)
-print()
-print("---------------------------------------------------------------------------------")
-print()
-print("Plotting results for Instance 2")
-print()
-instance2_results = Result_Experimentation_Instance(2)
-Plot_Graphs(instance2_results)
-
-print("Best Fitness values for Instance 1")
-print()
-Get_Best_Fitness(instance1_results)
-print()
-print()
-print("Best Fitness values for Instance 2")
-print()
-Get_Best_Fitness(instance2_results)
+obj=SmartCargoLoading()
+obj.Get_Input()
+print("Plotting results:")
+print("Instance 1 ")
+resultsForInstance1 = Result_Experimentation_Instance(1)
+Plot_Graphs(resultsForInstance1)
+print("Instance 2")
+resultsForInstance2 = Result_Experimentation_Instance(2)
+Plot_Graphs(resultsForInstance2)
+print("Best Fitness values:")
+print("Instance 1")
+Get_Best_Fitness(resultsForInstance1)
+print("Instance 2")
+Get_Best_Fitness(resultsForInstance2)
 
