@@ -167,7 +167,7 @@ class SmartCargoLoading:
         containers = int(input("Please enter the number of containers:  "))
         items = int(input("Please enter the number of items in containers:  "))
         option = int(input("Press 1 if you want items' weights to be as item weight/2 \nOr press 2 for weights as (item weight^2)/2: "))
-        num = int(input("Enter the number of random populations to want to create: "))
+        num = int(random.randrange(40,100))
         trials = int(input("Enter the number of trials: "))
         times = int(input("Enter the number of times you wish to perform mutation: "))
         return containers,items,option,num,trials,times
