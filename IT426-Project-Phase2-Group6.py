@@ -323,7 +323,6 @@ def Result_Experimentation_Instance(instance):
     return all_results_instance
 
 
-##function to plot graphs for all trials of each experiment
 def Plot_Graphs(result):
     for count in range(0,len(result)):
         t = "Graphs for Experiment" + str(count+1)
@@ -339,7 +338,6 @@ def Plot_Graphs(result):
             plt.grid(True)
             plt.show()
 
-##function to get the best fitness value for each trial of each experiment
 def Get_Best_Fitness(result,):
     fitness_eval = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
     for count in range(0,len(result)):
