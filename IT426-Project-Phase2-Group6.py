@@ -1,9 +1,12 @@
 import random
 import sys
 import math
-from typing import Container
 import matplotlib.pyplot as plt
 
+#Renad Altayyar 441200897
+#Rahaf Alzahrani 441201093 
+#Layan alorayyidh 441201401
+#Danah Alturki 441200847
 class SmartCargoLoading:
 
      #Ask user for requared inputs
