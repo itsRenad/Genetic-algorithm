@@ -15,7 +15,50 @@ class SmartCargoLoading:
             sys.exit("You have only one container, it is obvious!")
         p = int(random.randrange(40,100))
         M = int(input("Enter the number of mutations: "))
-        return items,containers,option,p,M
+        T = int(input("Enter the number of trials: "))
+        return items,containers,option,p,M,T
+
+    ##Using user inpute values HERE
+    def call_algo():
+        all_fitness = []
+        #generation values
+        exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+        SCL = SmartCargoLoading() 
+        containers,items,option,pop_size,mutation_k,cond = SCL.input_func()
+        if cond == 1:
+            condition = "Crossover"
+        elif cond == 2:
+            condition == "None"
+        #doing for 5 trials
+        counter = 5
+        while counter > 0:
+            exp_fitness=[]
+            for i in range(0,len(exp_trials)):
+                pop = SCL.Create_nRandom_Populations(pop_size,items,containers,option)
+                fitness = SCL.Get_All_Fitness(pop)
+                res = SCL.Genetic_Algorithm(exp_trials[i],containers,items,fitness,pop,mutation_k,condition)
+                exp_fitness.append(res)
+            counter -= 1
+            all_fitness.append(exp_fitness)
+        return all_fitness
+
+    def Plot_Graphs_UserDefined(result):
+        for i in range(0,len(result)):
+            exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+            plt.plot(exp_trials, result[i], color='red', marker='o')
+            title = "Plot for trial " + str(i+1)
+            plt.title(title, fontsize=14)
+            plt.xlabel('Generation', fontsize=14)
+            plt.ylabel('Fitness', fontsize=14)
+            plt.grid(True)
+            plt.show()
+    
+    ##function to randomly create n chromosome and calculate their fitness
+    def Apply_Initial_Steps(self):
+        containers,items,option,num,trials,times = self.input_func()
+        pop = self.Create_Random_Population(num,items, containers, option)
+        fitness = self.All_Fitness(pop)
+        return containers,items,option,num,fitness,pop,trials,times
 
     #creates random number of chromosomes population between 40 and 100 
     def Create_Populations(self,P,items, containers, option):
@@ -128,9 +171,9 @@ class SmartCargoLoading:
         randPopB = self.Mutate(randomPoP, randPopB, random.uniform(0, 1))
         return randPopA, randPopB
     
-    """returns the two best fitness valued chromosomes from the population
-        which is the chromosome whose weight difference between the heaviest and lightest
-        container is minimum"""
+    ##returns the two best fitness valued chromosomes from the population
+    ##which is the chromosome whose weight difference between the heaviest and lightest
+    ##container is minimum
     def Ellitist_Wheel_Selection(self,fitness,Population):
         for i in range(0,len(fitness)):
             for j in range(0,len(fitness)-i-1):
@@ -143,11 +186,11 @@ class SmartCargoLoading:
                     Population[j+1] = temp1
         return Population[0],Population[1],fitness
     
-    """This function is used to add the newly created random chromosomes to the population
-        This function works in a way that it first adds the chromosomes and their fitness values to the 
-        population and fitness. It then sorts them in ascending order of fitness value and 
-        removes the last 2 chromosomes from population,the two worst chromosome having the maximum weight differences
-        are removed"""
+    ##This function is used to add the newly created random chromosomes to the population
+    ##This function works in a way that it first adds the chromosomes and their fitness values to the 
+    ##population and fitness. It then sorts them in ascending order of fitness value and 
+    ##removes the last 2 chromosomes from population,the two worst chromosome having the maximum weight differences
+    ##are removed
     def Add_Back_To_Population(self,fitA, randPopA, fitB, randPopB, fitness,Population):
         fitness.append(fitA)
         fitness.append(fitB)
@@ -167,12 +210,12 @@ class SmartCargoLoading:
             Population.pop()
         return fitness,Population
     
-    """prints the best overall fitness value and its chromosome"""
+    ##prints the best overall fitness value and its chromosome
     def Print_Result(self,res):
         print("The best fitness value is", res[0])
         print("The best population is",res[1])
     
-    """working of genetic algorithm"""
+    ##working of genetic algorithm
     def Genetic_Algorithm(self,trials,containers,items,fitness,pop,times,condition):
         #stores the best overall fitness value
         bestOVERALL = [float('inf'), None]
@@ -197,7 +240,6 @@ class SmartCargoLoading:
                 if fitB < bestOVERALL[0]:
                     bestOVERALL = (fitB, randPopB)
                 trials -= 1
-#             self.Print_Result(bestOVERALL)
             return bestOVERALL[0]
         #if no crossover is to be applied
         else:
@@ -220,11 +262,10 @@ class SmartCargoLoading:
                     bestOVERALL = (fitB, randPopB)
                 trials -= 1
             return bestOVERALL[0]
-#             self.Print_Result(bestOVERALL)
 
 
 
-"""This fuction is used to run a given experiment for k trials"""
+##This fuction is used to run a given experiment for k trials
 def Experimentation_Instance(pop_size,mutation_k,condition,instance):
     #if experiment for instance 1 is to be done
     if instance == 1:
@@ -234,7 +275,7 @@ def Experimentation_Instance(pop_size,mutation_k,condition,instance):
         containers,items,option = 100,200, 2
     all_fitness = []
     #generation values
-    exp_trials = [1000,2000,3000]
+    exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
     SCL = SmartCargoLoading() 
     #doing for 5 trials
     counter = 5
@@ -250,7 +291,7 @@ def Experimentation_Instance(pop_size,mutation_k,condition,instance):
     return all_fitness
 
 
-"""function to perform all 6 experiments for a given instance"""
+##function to perform all 6 experiments for a given instance
 def Result_Experimentation_Instance(instance):
     #creating a dictionary to store results for each expeiment
     all_results_instance = {}
@@ -278,14 +319,14 @@ def Result_Experimentation_Instance(instance):
     return all_results_instance
 
 
-"""function to plot graphs for all trials of each experiment"""
+##function to plot graphs for all trials of each experiment
 def Plot_Graphs(result):
     for count in range(0,len(result)):
         t = "Graphs for Experiment" + str(count+1)
         print(t)
         key = "exp" + str(count+1)
         for i in range(0,len(result.get(key)[0])):
-            exp_trials = [1000,2000,3000]
+            exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
             plt.plot(exp_trials, result.get(key)[0][i], color='red', marker='o')
             title = "Plot for trial " + str(i+1)
             plt.title(title, fontsize=14)
@@ -294,9 +335,9 @@ def Plot_Graphs(result):
             plt.grid(True)
             plt.show()
 
-"""function to get the best fitness value for each trial of each experiment"""
+##function to get the best fitness value for each trial of each experiment
 def Get_Best_Fitness(result,):
-    exp_trials = [1000,2000,3000]
+    exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
     for count in range(0,len(result)):
         key = "exp" + str(count+1)
         print("Experiment ",count+1)
