@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 #Renad Altayyar 441200897
 #Rahaf Alzahrani 441201093 
-#Layan Alorayyidh 441201401
+#Layan alorayyidh 441201401
 #Danah Alturki 441200847
 
 class SmartCargoLoading:
@@ -24,10 +24,9 @@ class SmartCargoLoading:
 
     ##Using user inpute values HERE
     def call_algo():
-        print("_____________________________")
         all_fitness = []
         #generation valuesfitness evaluations
-        fitness_eval = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+        fitness_evals = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
         SCL = SmartCargoLoading() 
         items,containers,option,pop_size,m,cond = SCL.input_func()
         if cond == 1:
@@ -38,10 +37,10 @@ class SmartCargoLoading:
         counter = 5
         while counter > 0:
             exp_fitness=[]
-            for i in range(0,len(fitness_eval)):
+            for i in range(0,len(fitness_evals)):
                 pop = SCL.Create_Random_Population(pop_size,items,containers,option)
                 fitness = SCL.All_Fitness(pop)
-                res = SCL.Genetic_Algorithm(fitness_eval[i],containers,items,fitness,pop,m,condition)
+                res = SCL.Genetic_Algorithm(fitness_evals[i],containers,items,fitness,pop,m,condition)
                 exp_fitness.append(res)
             counter -= 1
             all_fitness.append(exp_fitness)
@@ -49,8 +48,8 @@ class SmartCargoLoading:
 
     def Plot_Graphs_UserDefined(result):
         for i in range(0,len(result)):
-            fitness_eval = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
-            plt.plot(fitness_eval, result[i], color='red', marker='o')
+            fitness_evals = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+            plt.plot(fitness_evals, result[i], color='red', marker='o')
             title = "Plot for trial " + str(i+1)
             plt.title(title, fontsize=14)
             plt.xlabel('Generation', fontsize=14)
@@ -280,16 +279,16 @@ def Experimentation_Instance(pop_size,mutation_k,condition,instance):
         containers,items,option = 100,200, 2
     all_fitness = []
     #generation values
-    fitness_eval = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+    fitness_evals = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
     SCL = SmartCargoLoading() 
     #Performing 5 trials
     counter = 5
     while counter > 0:
         exp_fitness=[]
-        for i in range(0,len(fitness_eval)):
+        for i in range(0,len(fitness_evals)):
             pop = SCL.Create_Populations(pop_size,items,containers,option)
             fitness = SCL.All_Fitness(pop)
-            res = SCL.Genetic_Algorithm(fitness_eval[i],containers,items,fitness,pop,mutation_k,condition)
+            res = SCL.Genetic_Algorithm(fitness_evals[i],containers,items,fitness,pop,mutation_k,condition)
             exp_fitness.append(res)
         counter -= 1
         all_fitness.append(exp_fitness)
@@ -301,26 +300,26 @@ def Result_Experimentation_Instance(instance):
     #creating a dictionary to store results for each expeiment
     all_results_instance = {}
     for i in range(1,7):
-        key = "Experiment"+str(i)
+        key = "exp"+str(i)
         all_results_instance[key] = []
     #experiment1
-    Experiment1_fitness = Experimentation_Instance(10,1,"Crossover",instance)
-    all_results_instance["Experiment1"].append(Experiment1_fitness) 
+    exp1_fitness = Experimentation_Instance(10,1,"Crossover",instance)
+    all_results_instance["exp1"].append(exp1_fitness) 
     #experiment2
-    Experiment2_fitness = Experimentation_Instance(100,1,"Crossover",instance)
-    all_results_instance["Experiment2"].append(Experiment2_fitness) 
+    exp2_fitness = Experimentation_Instance(100,1,"Crossover",instance)
+    all_results_instance["exp2"].append(exp2_fitness) 
     #experiment3
-    Experiment3_fitness = Experimentation_Instance(10,5,"Crossover",instance)
-    all_results_instance["Experiment3"].append(Experiment3_fitness) 
+    exp3_fitness = Experimentation_Instance(10,5,"Crossover",instance)
+    all_results_instance["exp3"].append(exp3_fitness) 
     #experiment4
-    Experiment4_fitness = Experimentation_Instance(100,5,"Crossover",instance)
-    all_results_instance["Experiment4"].append(Experiment4_fitness) 
+    exp4_fitness = Experimentation_Instance(100,5,"Crossover",instance)
+    all_results_instance["exp4"].append(exp4_fitness) 
     #experiment5
-    Experiment5_fitness = Experimentation_Instance(10,5,"None",instance)
-    all_results_instance["Experiment5"].append(Experiment5_fitness) 
+    exp5_fitness = Experimentation_Instance(10,5,"None",instance)
+    all_results_instance["exp5"].append(exp5_fitness) 
     #experiment6
-    Experiment6_fitness = Experimentation_Instance(10,0,"Crossover",instance)
-    all_results_instance["Experiment6"].append(Experiment6_fitness) 
+    exp6_fitness = Experimentation_Instance(10,0,"Crossover",instance)
+    all_results_instance["exp6"].append(exp6_fitness) 
     return all_results_instance
 
 
@@ -331,8 +330,8 @@ def Plot_Graphs(result):
         print(t)
         key = "exp" + str(count+1)
         for i in range(0,len(result.get(key)[0])):
-            fitness_eval = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
-            plt.plot(fitness_eval, result.get(key)[0][i], color='red', marker='o')
+            fitness_evals = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+            plt.plot(fitness_evals, result.get(key)[0][i], color='red', marker='o')
             title = "Plot for trial " + str(i+1)
             plt.title(title, fontsize=14)
             plt.xlabel('Generation', fontsize=14)
@@ -342,14 +341,14 @@ def Plot_Graphs(result):
 
 ##function to get the best fitness value for each trial of each experiment
 def Get_Best_Fitness(result,):
-    fitness_eval = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+    fitness_evals = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
     for count in range(0,len(result)):
         key = "exp" + str(count+1)
         print("Experiment ",count+1)
         for i in range(0,len(result.get(key)[0])):
             min_val = min(result.get(key)[0][i])
             min_index = result.get(key)[0][i].index(min_val)
-            gen = fitness_eval[min_index]
+            gen = fitness_evals[min_index]
             print("Best Fitness for trial",i+1,"is: ",min_val,"for Generation",gen)
         print()
         
