@@ -1,81 +1,79 @@
 import random
-import sys
-import math
-from typing import Container
+import copy
 import matplotlib.pyplot as plt
 
-class SmartCargoLoading:
+Scontainer = "container"
+Sitem = "item"
 
-     #Ask user for requared inputs
-    def input_func(self):
-        items = int(input("Enter the number of items:  "))
-        containers = int(input("Enter the number of containers:  "))
-        option = int(input("Press 1 if you want items' weights to be as item weight/2 \nOr press 2 for weights as (item weight^2)/2: "))
-        if containers==1:
-            sys.exit("You have only one container, it is obvious!")
-        p = int(random.randrange(40,100))
-        M = int(input("Enter the number of mutations: "))
-        return items,containers,option,p,M
-
-    #creates random number of chromosomes population between 40 and 100 
-    def Create_Populations(self,P,items, containers, option):
+class CargoLoading:
+    #Add the items to the containers
+    def Add_Item(self, container, item, opt, Chromo):
+        #if the user selects option A
+        if opt == "A":
+            weight = item / 2
+        # if the user selects option B
+        elif opt == "B":
+            weight = (item ** 2) / 2
+        Chromo[container].append((Sitem + str(item), weight))
+    
+    def Find_Weight_Diff_Each_Population(self, pop):
+        #list to store the sum of weights in each container
+        sum_weights = []
+        #iterating over the dictionary containing container and weights and calculating the sum of weights in each container
+        for _, value in pop.items():
+            summ = 0
+            #as we have (item,weight) tuple 
+            for (_,weight) in value:
+                #adding up weights in each container
+                summ += weight
+            #adding summed weights to list
+            sum_weights.append(summ)
+        max_weight = max(sum_weights)
+        min_weight = min(sum_weights)
+        return max_weight - min_weight
+    
+    """creates n number of random populations"""
+    def Create_nRandom_Populations(self,num,items, containers, option):
         Population = []
-        while P > 0:
+        while num > 0:
             Population.append(self.Create_Random_Population(items, containers, option))
-            P -= 1
+            num -= 1
         return Population
-
-    #creates a random chromosome (solution), that is randomly adds items to containers
+    
+    """creates a random chromosome, which is randomly adds items to the containers"""
     def Create_Random_Population(self, items, containers, option):
         Chromosome={}
         for i in range(1, containers + 1):
-            ContainerName = "Container" + str(i)
+            # Perparing the containers name to be as  container1,container2...
+            ContainerName = Scontainer + str(i)
             Chromosome[ContainerName] = []
-            
         # Store the number of the items
-        for i in range(1,items+1):
+        i = items
+        while i > 0:
+            # To distribute the items randomly generate a value between 1 and 2
+            prob = random.randint(1, 2)
             d = list(Chromosome)
-            # Chose a container in even index
-            rand = random.randint(0,containers-1)
-            # Add the item to the even container
-            self.Add(d[rand], i, option, Chromosome)
+            if prob > 1:
+                # Chose a container in even index
+                rand = random.randrange(0, containers, 2)
+                # Add the item to the even container
+                self.Add_Item(d[rand], i, option, Chromosome)
+            # if prob value is greater than 1
+            else:
+                # Chose a container in odd index
+                rand = random.randrange(1, containers, 2)
+                # Add the item to the odd container
+                self.Add_Item(d[rand], i, option, Chromosome)
+            i -= 1
         return Chromosome
-
-    #Add the items to the containers (within one chromosome) bu the option
-    def Add(self, container, i, opt, Chromo):
-        weight=0
-        if opt == 1:
-            weight = ((i/2))
-        elif opt == 2:
-            weight = (((i**2)/2))
-        Chromo[container].append(("item" + str(i), weight))
     
-    def compute_mean_weight_difference(self, pop):
-        #list to store the sum of weights in each container
-        each_container_weight_sum = []
-        #iterating on the dictionary to calculate the sum of weights in each container
-        for _, value in pop.items():
-            summ = 0
-            #because we have (item,weight) 
-            for (_,weight) in value:
-                 #Calculate the sum of weights in each container
-                summ += weight
-            each_container_weight_sum.append(summ)
-        #Calculate difference between the sum of weights of each container
-        #weight_of_container[i] - weight_of_container[i+1]
-        for i, j in zip(each_container_weight_sum[:-1], each_container_weight_sum[1:]):
-            weight_diff_between_containers = [abs(j-i)]
-            #Find the mean difference of weights
-            mean_fitness = math.fsum(weight_diff_between_containers)/len(weight_diff_between_containers)
-        return mean_fitness
-    
-    ##calculates fitness of a given chromosome
+    """calculates fitness of a given chromosome"""
     def Calculate_Fitness(self,chromosome):
-        fit = self.compute_mean_weight_difference(chromosome)
+        fit = self.Find_Weight_Diff_Each_Population(chromosome)
         return fit
     
-    ##calculates fitness of all the chromosomes in the population
-    def All_Fitness(self,pop):
+    """calculates fitness of all the chromosomes in the population"""
+    def Get_All_Fitness(self,pop):
         fitness = []
         for chrom in pop:
             fitness.append(self.Calculate_Fitness(chrom))
@@ -114,34 +112,29 @@ class SmartCargoLoading:
             pop1[i] = pop2[i]
         return dict(pop1)
     
-    #creates a random population and mutates the given population with the random population"""
-    def Start_Mutation(self,randPopA, randPopB, items,containers):
+    """creates a random population and mutates the given population with the random population"""
+    def Perform_Mutation(self,randPopA, randPopB, items,containers):
         rand = random.uniform(0,1)
         randomPoP = None
         #creating a random population to mutate the population with. 
         if rand > 0.5:
-            randomPoP = self.Create_Random_Population(items, containers, 1)
+            randomPoP = self.Create_Random_Population(items, containers,"A")
         else:
-            randomPoP = self.Create_Random_Population(items, containers, 2)
+            randomPoP = self.Create_Random_Population(items, containers,"B")
         #mutating both of the population
         randPopA = self.Mutate(randomPoP, randPopA, random.uniform(0, 1))
         randPopB = self.Mutate(randomPoP, randPopB, random.uniform(0, 1))
         return randPopA, randPopB
     
-    """returns the two best fitness valued chromosomes from the population
-        which is the chromosome whose weight difference between the heaviest and lightest
-        container is minimum"""
-    def Ellitist_Wheel_Selection(self,fitness,Population):
-        for i in range(0,len(fitness)):
-            for j in range(0,len(fitness)-i-1):
-                if fitness[j] > fitness[j+1]:
-                    temp = fitness[j]
-                    temp1 = Population[j]
-                    fitness[j] = fitness[j+1]
-                    Population[j] = Population[j+1]
-                    fitness[j+1] = temp
-                    Population[j+1] = temp1
-        return Population[0],Population[1],fitness
+    def Roulette_Wheel_Selection(self,Population):
+        ''' This Function randomly selects two individual population from the entire population
+        and returns them. this technique is known as roulette wheel'''
+        index1 = random.randint(0, len(Population)-1 )
+        index2 = random.randint(0, len(Population)-1 )
+        #just to make sure that both random individuals are not the same population
+        while index2 == index1:
+            index2 = random.randint(0, len(Population)-1 )
+        return Population[index1], Population[index2]
     
     """This function is used to add the newly created random chromosomes to the population
         This function works in a way that it first adds the chromosomes and their fitness values to the 
@@ -166,11 +159,15 @@ class SmartCargoLoading:
             fitness.pop()
             Population.pop()
         return fitness,Population
-    
-    """prints the best overall fitness value and its chromosome"""
-    def Print_Result(self,res):
-        print("The best fitness value is", res[0])
-        print("The best population is",res[1])
+    """function to get input from the user"""
+    def Get_Input(self):
+        containers = int(input("Please enter the number of containers:  "))
+        items = int(input("Please enter the number of items in containers:  "))
+        option = str(input("Choose A if you want item`s weight to be as i/2 OR choose B if you want item weight as (i^2)/2: "))
+        num = int(input("Enter the number of random populations to want to create: "))
+        condition = int(input("Enter 1 for Crossover and 2 for No-Crossover: "))
+        times = int(input("Enter the number of times you wish to perform mutation: "))
+        return containers,items,option,num,times,condition
     
     """working of genetic algorithm"""
     def Genetic_Algorithm(self,trials,containers,items,fitness,pop,times,condition):
@@ -180,11 +177,11 @@ class SmartCargoLoading:
         if condition == "Crossover":
             while trials > 0:
                 #selects to best chromosomes
-                randPopA,randPopB,fitness = self.Ellitist_Wheel_Selection(fitness,pop) 
+                randPopA,randPopB = self.Roulette_Wheel_Selection(pop)
                 randPopA, randPopB = self.Single_Point_Crossover(randPopA, randPopB)#crosover
                 #applies mutation as per the mutation operator
                 while times > 0:
-                    randPopA, randPopB = self.Start_Mutation(randPopA, randPopB,items,containers)#mutation
+                    randPopA, randPopB = self.Perform_Mutation(randPopA, randPopB,items,containers)#mutation
                     times -= 1
                 #calculates fitness values
                 fitA = self.Calculate_Fitness(randPopA)
@@ -197,7 +194,6 @@ class SmartCargoLoading:
                 if fitB < bestOVERALL[0]:
                     bestOVERALL = (fitB, randPopB)
                 trials -= 1
-#             self.Print_Result(bestOVERALL)
             return bestOVERALL[0]
         #if no crossover is to be applied
         else:
@@ -206,7 +202,7 @@ class SmartCargoLoading:
                 randPopA,randPopB,fitness = self.Ellitist_Wheel_Selection(fitness,pop) 
                 #applies mutation as per the mutation operator
                 while times > 0:
-                    randPopA, randPopB = self.Start_Mutation(randPopA, randPopB,items,containers)#mutation
+                    randPopA, randPopB = self.Perform_Mutation(randPopA, randPopB,items,containers)#mutation
                     times -= 1
                 #calculates fitness values
                 fitA = self.Calculate_Fitness(randPopA)
@@ -220,35 +216,31 @@ class SmartCargoLoading:
                     bestOVERALL = (fitB, randPopB)
                 trials -= 1
             return bestOVERALL[0]
-#             self.Print_Result(bestOVERALL)
-
-
 
 """This fuction is used to run a given experiment for k trials"""
 def Experimentation_Instance(pop_size,mutation_k,condition,instance):
     #if experiment for instance 1 is to be done
     if instance == 1:
-        containers,items,option = 10,200, 1
+        containers,items,option = 10,200,"A"
     #if experiment for instance 2 is to be done
     else:
-        containers,items,option = 100,200, 2
+        containers,items,option = 100,200,"B"
     all_fitness = []
     #generation values
-    exp_trials = [1000,2000,3000]
-    SCL = SmartCargoLoading() 
-    #doing for 5 trials
-    counter = 5
+    exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+    SCL = CargoLoading() 
+    #doing for 8 trials
+    counter = 8
     while counter > 0:
         exp_fitness=[]
         for i in range(0,len(exp_trials)):
-            pop = SCL.Create_Populations(pop_size,items,containers,option)
-            fitness = SCL.All_Fitness(pop)
+            pop = SCL.Create_nRandom_Populations(pop_size,items,containers,option)
+            fitness = SCL.Get_All_Fitness(pop)
             res = SCL.Genetic_Algorithm(exp_trials[i],containers,items,fitness,pop,mutation_k,condition)
             exp_fitness.append(res)
         counter -= 1
         all_fitness.append(exp_fitness)
     return all_fitness
-
 
 """function to perform all 6 experiments for a given instance"""
 def Result_Experimentation_Instance(instance):
@@ -277,7 +269,6 @@ def Result_Experimentation_Instance(instance):
     all_results_instance["exp6"].append(exp6_fitness) 
     return all_results_instance
 
-
 """function to plot graphs for all trials of each experiment"""
 def Plot_Graphs(result):
     for count in range(0,len(result)):
@@ -285,7 +276,7 @@ def Plot_Graphs(result):
         print(t)
         key = "exp" + str(count+1)
         for i in range(0,len(result.get(key)[0])):
-            exp_trials = [1000,2000,3000]
+            exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
             plt.plot(exp_trials, result.get(key)[0][i], color='red', marker='o')
             title = "Plot for trial " + str(i+1)
             plt.title(title, fontsize=14)
@@ -296,7 +287,7 @@ def Plot_Graphs(result):
 
 """function to get the best fitness value for each trial of each experiment"""
 def Get_Best_Fitness(result,):
-    exp_trials = [1000,2000,3000]
+    exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
     for count in range(0,len(result)):
         key = "exp" + str(count+1)
         print("Experiment ",count+1)
@@ -306,19 +297,63 @@ def Get_Best_Fitness(result,):
             gen = exp_trials[min_index]
             print("Best Fitness for trial",i+1,"is: ",min_val,"for Generation",gen)
         print()
-        
-obj=SmartCargoLoading()
-obj.input_func()
-print("Plotting results:")
-print("Instance 1 ")
-resultsForInstance1 = Result_Experimentation_Instance(1)
-Plot_Graphs(resultsForInstance1)
-print("Instance 2")
-resultsForInstance2 = Result_Experimentation_Instance(2)
-Plot_Graphs(resultsForInstance2)
-print("Best Fitness values:")
-print("Instance 1")
-Get_Best_Fitness(resultsForInstance1)
-print("Instance 2")
-Get_Best_Fitness(resultsForInstance2)
 
+"""IF YOU WANT USER DEFINED INPUT"""
+def call_algo():
+    all_fitness = []
+    #generation values
+    exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+    SCL = CargoLoading() 
+    containers,items,option,pop_size,mutation_k,cond = SCL.Get_Input()
+    if cond == 1:
+        condition = "Crossover"
+    elif cond == 2:
+        condition == "None"
+    #doing for 8 trials
+    counter = 8
+    while counter > 0:
+        exp_fitness=[]
+        for i in range(0,len(exp_trials)):
+            pop = SCL.Create_nRandom_Populations(pop_size,items,containers,option)
+            fitness = SCL.Get_All_Fitness(pop)
+            res = SCL.Genetic_Algorithm(exp_trials[i],containers,items,fitness,pop,mutation_k,condition)
+            exp_fitness.append(res)
+        counter -= 1
+        all_fitness.append(exp_fitness)
+    return all_fitness
+
+def Plot_Graphs_UserDefined(result):
+    for i in range(0,len(result)):
+        exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+        plt.plot(exp_trials, result[i], color='red', marker='o')
+        title = "Plot for trial " + str(i+1)
+        plt.title(title, fontsize=14)
+        plt.xlabel('Generation', fontsize=14)
+        plt.ylabel('Fitness', fontsize=14)
+        plt.grid(True)
+        plt.show()
+
+print("Plotting results for Instance 1")
+print()
+instance1_results = Result_Experimentation_Instance(1)
+Plot_Graphs(instance1_results)
+print()
+print("---------------------------------------------------------------------------------")
+print()
+print("Plotting results for Instance 2")
+print()
+instance2_results = Result_Experimentation_Instance(2)
+Plot_Graphs(instance2_results)
+
+print("Best Fitness values for Instance 1")
+print()
+Get_Best_Fitness(instance1_results)
+print()
+print()
+print("Best Fitness values for Instance 2")
+print()
+Get_Best_Fitness(instance2_results)
+
+"""for user defined"""
+res = call_algo()
+Plot_Graphs_UserDefined(res)
