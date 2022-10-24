@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 #Rahaf Alzahrani 441201093 
 #Layan alorayyidh 441201401
 #Danah Alturki 441200847
+
 class SmartCargoLoading:
 
      #Ask user for requared inputs
@@ -18,28 +19,28 @@ class SmartCargoLoading:
             sys.exit("You have only one container, it is obvious!")
         p = int(random.randrange(40,100))
         M = int(input("Enter the number of mutations: "))
-        T = int(input("Enter the number of trials: "))
-        return items,containers,option,p,M,T
+        condition = int(input("Enter 1 for Crossover and 2 for No-Crossover: "))
+        return items,containers,option,p,M,condition
 
     ##Using user inpute values HERE
     def call_algo():
         all_fitness = []
-        #generation values
-        exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+        #generation valuesfitness evaluations
+        fitness_eval = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
         SCL = SmartCargoLoading() 
-        containers,items,option,pop_size,mutation_k,cond = SCL.input_func()
+        items,containers,option,pop_size,m,cond = SCL.input_func()
         if cond == 1:
             condition = "Crossover"
         elif cond == 2:
             condition == "None"
-        #doing for 5 trials
+        #Performing 5 trials
         counter = 5
         while counter > 0:
             exp_fitness=[]
-            for i in range(0,len(exp_trials)):
-                pop = SCL.Create_nRandom_Populations(pop_size,items,containers,option)
-                fitness = SCL.Get_All_Fitness(pop)
-                res = SCL.Genetic_Algorithm(exp_trials[i],containers,items,fitness,pop,mutation_k,condition)
+            for i in range(0,len(fitness_eval)):
+                pop = SCL.Create_Random_Population(pop_size,items,containers,option)
+                fitness = SCL.All_Fitness(pop)
+                res = SCL.Genetic_Algorithm(fitness_eval[i],containers,items,fitness,pop,m,condition)
                 exp_fitness.append(res)
             counter -= 1
             all_fitness.append(exp_fitness)
@@ -47,8 +48,8 @@ class SmartCargoLoading:
 
     def Plot_Graphs_UserDefined(result):
         for i in range(0,len(result)):
-            exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
-            plt.plot(exp_trials, result[i], color='red', marker='o')
+            fitness_eval = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+            plt.plot(fitness_eval, result[i], color='red', marker='o')
             title = "Plot for trial " + str(i+1)
             plt.title(title, fontsize=14)
             plt.xlabel('Generation', fontsize=14)
@@ -278,16 +279,16 @@ def Experimentation_Instance(pop_size,mutation_k,condition,instance):
         containers,items,option = 100,200, 2
     all_fitness = []
     #generation values
-    exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+    fitness_eval = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
     SCL = SmartCargoLoading() 
-    #doing for 5 trials
+    #Performing 5 trials
     counter = 5
     while counter > 0:
         exp_fitness=[]
-        for i in range(0,len(exp_trials)):
+        for i in range(0,len(fitness_eval)):
             pop = SCL.Create_Populations(pop_size,items,containers,option)
             fitness = SCL.All_Fitness(pop)
-            res = SCL.Genetic_Algorithm(exp_trials[i],containers,items,fitness,pop,mutation_k,condition)
+            res = SCL.Genetic_Algorithm(fitness_eval[i],containers,items,fitness,pop,mutation_k,condition)
             exp_fitness.append(res)
         counter -= 1
         all_fitness.append(exp_fitness)
@@ -329,8 +330,8 @@ def Plot_Graphs(result):
         print(t)
         key = "exp" + str(count+1)
         for i in range(0,len(result.get(key)[0])):
-            exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
-            plt.plot(exp_trials, result.get(key)[0][i], color='red', marker='o')
+            fitness_eval = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+            plt.plot(fitness_eval, result.get(key)[0][i], color='red', marker='o')
             title = "Plot for trial " + str(i+1)
             plt.title(title, fontsize=14)
             plt.xlabel('Generation', fontsize=14)
@@ -340,14 +341,14 @@ def Plot_Graphs(result):
 
 ##function to get the best fitness value for each trial of each experiment
 def Get_Best_Fitness(result,):
-    exp_trials = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+    fitness_eval = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
     for count in range(0,len(result)):
         key = "exp" + str(count+1)
         print("Experiment ",count+1)
         for i in range(0,len(result.get(key)[0])):
             min_val = min(result.get(key)[0][i])
             min_index = result.get(key)[0][i].index(min_val)
-            gen = exp_trials[min_index]
+            gen = fitness_eval[min_index]
             print("Best Fitness for trial",i+1,"is: ",min_val,"for Generation",gen)
         print()
         
