@@ -18,7 +18,7 @@ class SmartCargoLoading:
         if containers==1:
             sys.exit("You have only one container, it is obvious!")
         p = int(random.randrange(40,100))
-        M = int(input("Enter the number of mutations: "))
+        M = random.uniform(0,10)
         condition = int(input("Enter 1 for Crossover and 2 for No-Crossover: "))
         return items,containers,option,p,M,condition
 
@@ -116,12 +116,12 @@ class SmartCargoLoading:
             mean_fitness = math.fsum(weight_diff_between_containers)/len(weight_diff_between_containers)
         return mean_fitness
     
-    ##calculates fitness of a given chromosome
+    #calculates fitness of a given chromosome
     def Calculate_Fitness(self,chromosome):
         fit = self.compute_mean_weight_difference(chromosome)
         return fit
     
-    ##calculates fitness of all the chromosomes in the population
+    #calculates fitness of all the chromosomes in the population
     def All_Fitness(self,pop):
         fitness = []
         for chrom in pop:
@@ -129,7 +129,6 @@ class SmartCargoLoading:
         return fitness
     
     def Single_Point_Crossover(self,randPopA, randPopB):
-        """this function performs the single point cross over at a random selected point within the categories."""
         point = random.randint(1, len(randPopA)-1)
         i = 0
         aa = []
@@ -303,23 +302,23 @@ def Result_Experimentation_Instance(instance):
         key = "exp"+str(i)
         all_results_instance[key] = []
     #experiment1
-    exp1_fitness = Experimentation_Instance(10,1,"Crossover",instance)
-    all_results_instance["exp1"].append(exp1_fitness) 
+    Experiment1_fitness = Experimentation_Instance(10,1,"Crossover",instance)
+    all_results_instance["Experiment1"].append(Experiment1_fitness) 
     #experiment2
-    exp2_fitness = Experimentation_Instance(100,1,"Crossover",instance)
-    all_results_instance["exp2"].append(exp2_fitness) 
+    Experiment2_fitness = Experimentation_Instance(100,1,"Crossover",instance)
+    all_results_instance["Experiment2"].append(Experiment2_fitness) 
     #experiment3
-    exp3_fitness = Experimentation_Instance(10,5,"Crossover",instance)
-    all_results_instance["exp3"].append(exp3_fitness) 
+    Experiment3_fitness = Experimentation_Instance(10,5,"Crossover",instance)
+    all_results_instance["Experiment3"].append(Experiment3_fitness) 
     #experiment4
-    exp4_fitness = Experimentation_Instance(100,5,"Crossover",instance)
-    all_results_instance["exp4"].append(exp4_fitness) 
+    Experiment4_fitness = Experimentation_Instance(100,5,"Crossover",instance)
+    all_results_instance["Experiment4"].append(Experiment4_fitness) 
     #experiment5
-    exp5_fitness = Experimentation_Instance(10,5,"None",instance)
-    all_results_instance["exp5"].append(exp5_fitness) 
+    Experiment5_fitness = Experimentation_Instance(10,5,"None",instance)
+    all_results_instance["Experiment5"].append(Experiment5_fitness) 
     #experiment6
-    exp6_fitness = Experimentation_Instance(10,0,"Crossover",instance)
-    all_results_instance["exp6"].append(exp6_fitness) 
+    Experiment6_fitness = Experimentation_Instance(10,0,"Crossover",instance)
+    all_results_instance["Experiment6"].append(Experiment6_fitness) 
     return all_results_instance
 
 
@@ -347,12 +346,11 @@ def Get_Best_Fitness(result,):
             min_val = min(result.get(key)[0][i])
             min_index = result.get(key)[0][i].index(min_val)
             gen = fitness_eval[min_index]
-            print("Best Fitness for trial",i+1,"is: ",min_val,"for Generation",gen)
+            print("The best Fitness for trial",i+1," , ",min_val," for generation",gen)
         print()
-#we use this if we want to ask the user for inputs 
-#but in this phase we don not need to since we have been asked for spicific input   
-#obj=SmartCargoLoading()
-#obj.input_func() 
+
+obj=SmartCargoLoading()
+obj.input_func() 
 
 print("Plotting results:")
 print("Instance 1 ")
