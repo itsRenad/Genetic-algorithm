@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 #Danah Alturki 441200847
 
 class SmartCargoLoading:
-
-     #Ask user for requared inputs
+   
+    #Ask user for requared inputs
     def input_func(self):
         items = int(input("Enter the number of items:  "))
         containers = int(input("Enter the number of containers:  "))
@@ -22,7 +22,7 @@ class SmartCargoLoading:
         condition = int(input("Enter 1 for Crossover and 2 for No-Crossover: "))
         return items,containers,option,p,M,condition
 
-    ##Using user inpute values HERE
+    #Using user inpute values HERE
     def call_algo():
         all_fitness = []
         #generation valuesfitness evaluations
@@ -349,9 +349,11 @@ def Get_Best_Fitness(result,):
             gen = fitness_eval[min_index]
             print("Best Fitness for trial",i+1,"is: ",min_val,"for Generation",gen)
         print()
-        
-obj=SmartCargoLoading()
-obj.input_func()
+#we use this if we want to ask the user for inputs 
+#but in this phase we don not need to since we have been asked for spicific input   
+#obj=SmartCargoLoading()
+#obj.input_func() 
+
 print("Plotting results:")
 print("Instance 1 ")
 resultsForInstance1 = Result_Experimentation_Instance(1)
