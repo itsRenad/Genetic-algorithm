@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 #Renad Altayyar 441200897
 #Rahaf Alzahrani 441201093 
-#Layan alorayyidh 441201401
+#Layan Alorayyidh 441201401
 #Danah Alturki 441200847
 
 class SmartCargoLoading:
@@ -24,6 +24,7 @@ class SmartCargoLoading:
 
     ##Using user inpute values HERE
     def call_algo():
+        print("_____________________________")
         all_fitness = []
         #generation valuesfitness evaluations
         fitness_eval = [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
@@ -300,26 +301,26 @@ def Result_Experimentation_Instance(instance):
     #creating a dictionary to store results for each expeiment
     all_results_instance = {}
     for i in range(1,7):
-        key = "exp"+str(i)
+        key = "Experiment"+str(i)
         all_results_instance[key] = []
     #experiment1
-    exp1_fitness = Experimentation_Instance(10,1,"Crossover",instance)
-    all_results_instance["exp1"].append(exp1_fitness) 
+    Experiment1_fitness = Experimentation_Instance(10,1,"Crossover",instance)
+    all_results_instance["Experiment1"].append(Experiment1_fitness) 
     #experiment2
-    exp2_fitness = Experimentation_Instance(100,1,"Crossover",instance)
-    all_results_instance["exp2"].append(exp2_fitness) 
+    Experiment2_fitness = Experimentation_Instance(100,1,"Crossover",instance)
+    all_results_instance["Experiment2"].append(Experiment2_fitness) 
     #experiment3
-    exp3_fitness = Experimentation_Instance(10,5,"Crossover",instance)
-    all_results_instance["exp3"].append(exp3_fitness) 
+    Experiment3_fitness = Experimentation_Instance(10,5,"Crossover",instance)
+    all_results_instance["Experiment3"].append(Experiment3_fitness) 
     #experiment4
-    exp4_fitness = Experimentation_Instance(100,5,"Crossover",instance)
-    all_results_instance["exp4"].append(exp4_fitness) 
+    Experiment4_fitness = Experimentation_Instance(100,5,"Crossover",instance)
+    all_results_instance["Experiment4"].append(Experiment4_fitness) 
     #experiment5
-    exp5_fitness = Experimentation_Instance(10,5,"None",instance)
-    all_results_instance["exp5"].append(exp5_fitness) 
+    Experiment5_fitness = Experimentation_Instance(10,5,"None",instance)
+    all_results_instance["Experiment5"].append(Experiment5_fitness) 
     #experiment6
-    exp6_fitness = Experimentation_Instance(10,0,"Crossover",instance)
-    all_results_instance["exp6"].append(exp6_fitness) 
+    Experiment6_fitness = Experimentation_Instance(10,0,"Crossover",instance)
+    all_results_instance["Experiment6"].append(Experiment6_fitness) 
     return all_results_instance
 
 
